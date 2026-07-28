@@ -1,0 +1,15 @@
+# Chuẩn hoá ký tự xuống dòng: lưu trong repo bằng LF, checkout theo hệ điều hành.
+# Nhờ đó cùng một mã nguồn build sạch trên cả Windows và Ubuntu.
+* text=auto
+
+# Các tệp bắt buộc phải là LF (script chạy trên Linux / github Actions)
+*.sh   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Tệp nhị phân: không đụng vào nội dung
+*.png binary
+*.shp binary
+*.shx binary
+*.dbf binary
+*.dat binary

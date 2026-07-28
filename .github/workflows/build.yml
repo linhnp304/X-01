@@ -1,0 +1,89 @@
+#
+# Build X-01 trên cả hai nền tảng đích mỗi lần push.
+#
+#   - Windows : Qt 6.8 tải bằng aqtinstall + MSVC 2022, đóng gói kèm DLL của Qt
+#               bằng windeployqt -> chạy được ngay, không cần cài Qt trên máy đích.
+#   - Ubuntu  : dùng Qt 6 của chính Ubuntu 24.04 (qt6-base-dev) để file chạy khớp
+#               với thư viện Qt có sẵn trên máy đích.
+#
+name: Build
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # ------------------------------------------------------------------ Windows
+  windows:
+    name: Windows (Qt 6.8, MSVC 2022)
+    runs-on: windows-2022
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài Qt 6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.1'
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          cache: true
+
+      - name: Cấu hình CMake
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Biên dịch
+        run: cmake --build build --config Release --parallel
+
+      - name: Đóng gói kèm thư viện Qt
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item build/bin/X-01.exe dist/
+          windeployqt --release --no-translations --no-compiler-runtime dist/X-01.exe
+
+      - name: Tải lên kết quả build
+        uses: actions/upload-artifact@v4
+        with:
+          name: X-01-windows
+          path: dist/
+          if-no-files-found: error
+
+  # ------------------------------------------------------------------- Ubuntu
+  linux:
+    name: Ubuntu 24.04 (Qt 6 hệ thống, GCC)
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài công cụ biên dịch và Qt 6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            qt6-base-dev qt6-base-dev-tools libgl1-mesa-dev
+
+      - name: Cấu hình CMake
+        run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Biên dịch
+        run: cmake --build build --parallel
+
+      - name: Đóng gói
+        run: |
+          mkdir -p dist
+          cp build/bin/X-01 dist/
+          chmod +x dist/X-01
+
+      - name: Tải lên kết quả build
+        uses: actions/upload-artifact@v4
+        with:
+          name: X-01-ubuntu-24.04
+          path: dist/
+          if-no-files-found: error

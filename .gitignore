@@ -1,0 +1,40 @@
+# ---- Thư mục chỉ nằm trên máy local, KHÔNG push lên github ----
+docs-local/
+
+# ---- Kết quả build ----
+build/
+build-*/
+out/
+dist/
+cmake-build-*/
+*.user
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+
+# ---- File sinh tự động của Qt ----
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.moc
+.qmake.stash
+Makefile
+
+# ---- Dữ liệu bản đồ (anh tự copy đến máy chạy) ----
+MapChuan/
+
+# ---- File cấu hình sinh ra khi chạy ----
+X-01.json
+
+# ---- Cấu hình riêng của công cụ trên máy local ----
+.claude/settings.local.json
+
+# ---- IDE / hệ điều hành ----
+.vs/
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store
