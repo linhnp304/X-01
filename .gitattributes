@@ -9,6 +9,7 @@
 
 # Tệp nhị phân: không đụng vào nội dung
 *.png binary
+*.ico binary
 *.shp binary
 *.shx binary
 *.dbf binary

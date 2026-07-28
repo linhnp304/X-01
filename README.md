@@ -147,8 +147,13 @@ File chạy nằm ở `build/bin/`.
 ## 7. Cấu trúc mã nguồn
 
 ```
+resources/
+├── app.ico                     Biểu tượng gốc (7 kích thước 16x16 → 256x256)
+├── app-*.png                   Các ảnh tách sẵn từ app.ico, nhúng vào file chạy
+└── app.rc                      Gắn app.ico vào chính file .exe (chỉ Windows)
+
 src/
-├── main.cpp                    Điểm vào, bật chế độ toàn màn hình
+├── main.cpp                    Điểm vào, đặt biểu tượng, bật chế độ toàn màn hình
 ├── MainWindow.*                Ghép 3 panel, thanh trạng thái, nối tín hiệu
 ├── AppSettings.*               Đọc/ghi cấu hình ra X-01.json
 ├── Theme.*                     Bảng màu + stylesheet tối cho toàn giao diện

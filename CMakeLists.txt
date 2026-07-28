@@ -63,6 +63,37 @@ qt_add_executable(X-01 ${X01_SOURCES})
 target_include_directories(X-01 PRIVATE src)
 target_link_libraries(X-01 PRIVATE Qt6::Widgets)
 
+# ---- Biểu tượng chương trình ----
+#
+# Tệp gốc là resources/app.ico (7 kích thước từ 16x16 đến 256x256). Các ảnh bên
+# trong .ico vốn đã ở dạng PNG nên được tách sẵn ra từng tệp riêng và nhúng vào
+# file chạy dưới dạng tài nguyên Qt. Dùng PNG thay vì đọc thẳng .ico để không
+# phụ thuộc plugin đọc ảnh ICO — Qt hỗ trợ PNG sẵn trong lõi, chắc chắn có ở cả
+# hai nền tảng. QIcon tự chọn kích thước khớp nhất với nơi cần hiển thị.
+qt_add_resources(X-01 "appicon"
+    PREFIX "/icons"
+    BASE "resources"
+    FILES
+        resources/app-16.png
+        resources/app-24.png
+        resources/app-32.png
+        resources/app-48.png
+        resources/app-64.png
+        resources/app-128.png
+        resources/app-256.png
+)
+
+# Riêng Windows cần thêm .ico gắn vào chính file .exe qua tệp tài nguyên .rc,
+# thì Explorer và thanh tác vụ mới hiện icon (tài nguyên Qt chỉ có tác dụng
+# bên trong chương trình khi đã chạy).
+if(WIN32)
+    target_sources(X-01 PRIVATE resources/app.rc)
+    # Trình biên dịch tài nguyên phải tìm được app.ico mà app.rc tham chiếu tới.
+    # CMake truyền các thư mục include của target sang cả trình biên dịch .rc,
+    # nên khai báo ở đây là đủ cho mọi bộ công cụ trên Windows.
+    target_include_directories(X-01 PRIVATE resources)
+endif()
+
 # WIN32_EXECUTABLE: không mở cửa sổ console đen kèm theo trên Windows.
 # RUNTIME_OUTPUT_DIRECTORY: đặt file chạy về cùng một chỗ (build/bin) cho cả
 # generator một cấu hình (Ninja/Make) lẫn nhiều cấu hình (Visual Studio),

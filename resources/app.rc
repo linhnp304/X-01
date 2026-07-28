@@ -1,0 +1,6 @@
+// X-01 - bieu tuong cua file chay tren Windows.
+// Dung ID so 1: Windows Explorer va thanh tac vu lay icon co ID nho nhat,
+// nen day la cach chac chan nhat de icon hien dung.
+// (Giai thich day du bang tieng Viet o CMakeLists.txt - file .rc nen giu
+//  thuan ASCII de trinh bien dich tai nguyen doc dung tren moi bang ma.)
+1 ICON "app.ico"
