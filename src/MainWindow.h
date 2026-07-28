@@ -13,6 +13,7 @@ class ListTab;
 class MapWidget;
 
 class QLabel;
+class QSplitter;
 class QTabWidget;
 class QTimer;
 
@@ -38,11 +39,17 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void showEvent(QShowEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void buildUi();
     void buildStatusBar();
     void connectSignals();
+
+    /// Chia lại hai splitter đúng tỉ lệ 70/30 và 75/25 theo kích thước hiện tại.
+    void applyPanelRatios();
+    /// Hẹn chia lại tỉ lệ vào nhịp kế tiếp của vòng lặp sự kiện (xem chú thích ở .cpp).
+    void schedulePanelRatios();
 
     /// Áp dụng cấu hình lên bản đồ rồi ghi ra tệp .json.
     void applyAndSaveSettings();
@@ -59,6 +66,14 @@ private:
     MapWidget *m_map = nullptr;
     QTabWidget *m_tabs = nullptr;
     AmplitudeWidget *m_amplitude = nullptr;
+
+    QSplitter *m_mainSplitter = nullptr;  ///< chia panel 1 và panel 2 (ngang)
+    QSplitter *m_rightSplitter = nullptr; ///< chia panel 2.1 và panel 2.2 (dọc)
+
+    /// Người dùng đã tự kéo thanh chia panel -> thôi tự động ép lại tỉ lệ.
+    bool m_userMovedSplitter = false;
+    /// Đã hẹn một lần chia lại tỉ lệ, tránh hẹn chồng khi kéo giãn cửa sổ liên tục.
+    bool m_ratioUpdatePending = false;
 
     ListTab *m_listTab = nullptr;
     ConnectionTab *m_connectionTab = nullptr;
@@ -78,6 +93,4 @@ private:
     double m_mouseLat = 0.0;
     double m_mouseLng = 0.0;
     bool m_mouseOnMap = false;
-
-    bool m_firstShow = true;
 };

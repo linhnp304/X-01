@@ -19,10 +19,13 @@ int main(int argc, char *argv[])
         appIcon.addFile(QStringLiteral(":/icons/app-%1.png").arg(size));
     QApplication::setWindowIcon(appIcon);
 
-    // Trên Linux chạy nền Wayland, trình quản lý cửa sổ ghép icon theo tên tệp
-    // .desktop chứ không lấy từ setWindowIcon. Khai báo sẵn tên để nếu sau này
-    // có cài tệp X-01.desktop thì icon hiện đúng cả ở thanh tác vụ.
-    QGuiApplication::setDesktopFileName(QStringLiteral("X-01"));
+    // Chú ý: KHÔNG gọi QGuiApplication::setDesktopFileName ở đây.
+    // Trên Linux, Qt đã tự đăng ký định danh chương trình với dịch vụ
+    // xdg-desktop-portal ngay lúc khởi động; gọi thêm setDesktopFileName sẽ kích
+    // hoạt lần đăng ký thứ hai trên cùng một kết nối D-Bus và sinh cảnh báo
+    // "Could not register app ID: Connection already associated with an
+    // application ID" trên cửa sổ dòng lệnh. Hàm này chỉ có tác dụng khi hệ thống
+    // đã cài sẵn tệp X-01.desktop — hiện chưa cài nên bỏ đi là đúng.
 
     // Giao diện tối kiểu kỹ thuật, thống nhất trên cả Windows và Ubuntu
     Theme::apply(app);

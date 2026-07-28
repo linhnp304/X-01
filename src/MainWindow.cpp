@@ -14,6 +14,7 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QResizeEvent>
 #include <QScrollArea>
 #include <QSplitter>
 #include <QStatusBar>
@@ -30,13 +31,17 @@ constexpr int kPanel2Percent = 30;  // cột điều khiển bên phải
 constexpr int kPanel21Percent = 75; // các tab điều khiển
 constexpr int kPanel22Percent = 25; // cửa sổ biên độ
 
-/// Bọc một tab vào vùng cuộn dọc, để nội dung dài vẫn xem được khi panel hẹp.
+/// Bọc một tab vào vùng cuộn, để nội dung dài vẫn xem được khi panel hẹp.
 QScrollArea *wrapInScroll(QWidget *content)
 {
     auto *area = new QScrollArea;
     area->setWidget(content);
     area->setWidgetResizable(true);
-    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    // Để thanh cuộn ngang ở chế độ "khi cần" thay vì tắt hẳn: tắt hẳn thì vùng cuộn
+    // buộc phải rộng ít nhất bằng nội dung, đẩy chiều rộng tối thiểu của cả panel 2
+    // lên cao và làm hỏng tỉ lệ 70/30. Thực tế 30% của 1920 vẫn thừa chỗ nên
+    // thanh cuộn ngang sẽ không xuất hiện.
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     area->setFrameShape(QFrame::NoFrame);
     return area;
 }
@@ -97,28 +102,33 @@ void MainWindow::buildUi()
     m_amplitude = new AmplitudeWidget(this);
 
     // ---- Ghép panel 2.1 và 2.2 theo chiều dọc ----
-    auto *rightSplitter = new QSplitter(Qt::Vertical, this);
-    rightSplitter->addWidget(m_tabs);
-    rightSplitter->addWidget(m_amplitude);
-    rightSplitter->setStretchFactor(0, kPanel21Percent);
-    rightSplitter->setStretchFactor(1, kPanel22Percent);
-    rightSplitter->setChildrenCollapsible(false);
-    rightSplitter->setHandleWidth(2);
+    m_rightSplitter = new QSplitter(Qt::Vertical, this);
+    m_rightSplitter->addWidget(m_tabs);
+    m_rightSplitter->addWidget(m_amplitude);
+    m_rightSplitter->setStretchFactor(0, kPanel21Percent);
+    m_rightSplitter->setStretchFactor(1, kPanel22Percent);
+    m_rightSplitter->setChildrenCollapsible(false);
+    m_rightSplitter->setHandleWidth(2);
 
     // ---- Ghép panel 1 và panel 2 theo chiều ngang ----
-    auto *mainSplitter = new QSplitter(Qt::Horizontal, this);
-    mainSplitter->addWidget(m_map);
-    mainSplitter->addWidget(rightSplitter);
-    mainSplitter->setStretchFactor(0, kPanel1Percent);
-    mainSplitter->setStretchFactor(1, kPanel2Percent);
-    mainSplitter->setChildrenCollapsible(false);
-    mainSplitter->setHandleWidth(2);
+    m_mainSplitter = new QSplitter(Qt::Horizontal, this);
+    m_mainSplitter->addWidget(m_map);
+    m_mainSplitter->addWidget(m_rightSplitter);
+    m_mainSplitter->setStretchFactor(0, kPanel1Percent);
+    m_mainSplitter->setStretchFactor(1, kPanel2Percent);
+    m_mainSplitter->setChildrenCollapsible(false);
+    m_mainSplitter->setHandleWidth(2);
 
-    setCentralWidget(mainSplitter);
+    setCentralWidget(m_mainSplitter);
 
-    // Ghi nhớ hai splitter để đặt tỉ lệ chính xác khi cửa sổ hiện lần đầu
-    mainSplitter->setObjectName(QStringLiteral("MainSplitter"));
-    rightSplitter->setObjectName(QStringLiteral("RightSplitter"));
+    // Người dùng tự kéo thanh chia -> tôn trọng lựa chọn của họ, thôi ép tỉ lệ.
+    // setSizes() không phát tín hiệu này nên không sợ tự kích hoạt lẫn nhau.
+    connect(m_mainSplitter, &QSplitter::splitterMoved, this, [this] {
+        m_userMovedSplitter = true;
+    });
+    connect(m_rightSplitter, &QSplitter::splitterMoved, this, [this] {
+        m_userMovedSplitter = true;
+    });
 }
 
 void MainWindow::buildStatusBar()
@@ -211,24 +221,46 @@ QString MainWindow::formatLatLng(double lat, double lng)
 void MainWindow::showEvent(QShowEvent *event)
 {
     QMainWindow::showEvent(event);
+    schedulePanelRatios();
+}
 
-    if (!m_firstShow)
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    schedulePanelRatios();
+}
+
+void MainWindow::schedulePanelRatios()
+{
+    if (m_userMovedSplitter || m_ratioUpdatePending)
         return;
-    m_firstShow = false;
+    m_ratioUpdatePending = true;
 
-    // Lúc này cửa sổ đã có kích thước thật -> chia panel đúng tỉ lệ 70/30 và 75/25.
-    if (auto *mainSplitter = findChild<QSplitter *>(QStringLiteral("MainSplitter"))) {
-        const int w = mainSplitter->width();
-        mainSplitter->setSizes({ w * kPanel1Percent / 100, w * kPanel2Percent / 100 });
-    }
-    if (auto *rightSplitter = findChild<QSplitter *>(QStringLiteral("RightSplitter"))) {
-        const int h = rightSplitter->height();
-        rightSplitter->setSizes({ h * kPanel21Percent / 100, h * kPanel22Percent / 100 });
-    }
+    // Phải hoãn một nhịp vòng lặp sự kiện: lúc showEvent/resizeEvent chạy thì bố cục
+    // chưa cập nhật xong, đọc chiều rộng splitter ngay sẽ ra giá trị cũ.
+    QTimer::singleShot(0, this, [this] {
+        m_ratioUpdatePending = false;
+        applyPanelRatios();
+    });
+}
 
-    // Đưa khung nhìn về tâm đài. Hoãn một nhịp vòng lặp sự kiện để chờ splitter
-    // bố trí lại xong, lúc đó MapWidget mới có chiều cao thật để tính mức phóng.
-    QTimer::singleShot(0, this, [this] { m_map->centerOnRadar(); });
+void MainWindow::applyPanelRatios()
+{
+    // Ép lại tỉ lệ ở MỌI lần đổi kích thước chứ không chỉ lần hiện đầu tiên.
+    // Trên Linux, showFullScreen() là bất đồng bộ: trình quản lý cửa sổ cấp chế độ
+    // toàn màn hình SAU khi showEvent đã chạy. Nếu chỉ chia một lần lúc đó thì cửa sổ
+    // còn đang nhỏ, phần chia cho panel 2 bị kẹt ở chiều rộng tối thiểu của nó,
+    // và QSplitter giữ nguyên tỉ lệ sai đó khi cửa sổ phóng to lên toàn màn hình.
+    if (m_mainSplitter) {
+        const int w = m_mainSplitter->width();
+        if (w > 0)
+            m_mainSplitter->setSizes({ w * kPanel1Percent / 100, w * kPanel2Percent / 100 });
+    }
+    if (m_rightSplitter) {
+        const int h = m_rightSplitter->height();
+        if (h > 0)
+            m_rightSplitter->setSizes({ h * kPanel21Percent / 100, h * kPanel22Percent / 100 });
+    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

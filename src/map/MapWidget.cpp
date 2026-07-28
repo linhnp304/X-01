@@ -490,6 +490,7 @@ void MapWidget::mouseMoveEvent(QMouseEvent *event)
         if (m_dragging) {
             m_centerLng = m_dragCenterLng - dx / m_scale;
             m_centerLat = m_dragCenterLat + dy / m_scale;
+            m_userChangedView = true;
             update();
         }
     }
@@ -530,6 +531,7 @@ void MapWidget::zoomAt(const QPointF &anchor, double factor)
     if (qFuzzyCompare(newScale, m_scale))
         return;
     m_scale = newScale;
+    m_userChangedView = true;
 
     // Giữ nguyên điểm địa lý nằm dưới con trỏ sau khi đổi tỉ lệ
     m_centerLng = lng - (anchor.x() - width() / 2.0) / m_scale;
@@ -593,6 +595,7 @@ QFrame#ZoomBar QToolButton:hover {
             return;
         // Kéo thanh trượt thì phóng quanh tâm panel
         m_scale = newScale;
+        m_userChangedView = true;
         update();
     });
     connect(m_zoomOutBtn, &QToolButton::clicked, this, [this] {
@@ -640,4 +643,11 @@ void MapWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
     layoutZoomBar();
+
+    // Mức phóng ban đầu tính theo chiều cao panel, mà chiều cao đó chỉ đúng sau khi
+    // cửa sổ đã vào chế độ toàn màn hình — trên Linux việc này xảy ra muộn hơn lúc
+    // chương trình hiện ra. Vì vậy cứ canh lại khung nhìn theo tâm đài cho tới khi
+    // người dùng tự kéo hoặc phóng bản đồ lần đầu.
+    if (!m_userChangedView)
+        centerOnRadar();
 }

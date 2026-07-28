@@ -103,6 +103,10 @@ private:
 
     double m_sweepAzimuth = 0.0; ///< mặc định 0 độ = hướng Bắc
 
+    /// Người dùng đã tự kéo hoặc phóng bản đồ lần nào chưa.
+    /// Trước lúc đó, khung nhìn được canh lại theo tâm đài mỗi khi panel đổi kích thước.
+    bool m_userChangedView = false;
+
     QFrame *m_zoomBar = nullptr;
     QSlider *m_zoomSlider = nullptr;
     QToolButton *m_zoomOutBtn = nullptr;
