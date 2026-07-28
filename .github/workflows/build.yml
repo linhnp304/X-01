@@ -44,7 +44,9 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item build/bin/X-01.exe dist/
-          windeployqt --release --no-translations --no-compiler-runtime dist/X-01.exe
+          # --compiler-runtime: kèm luôn thư viện runtime của MSVC để máy đích
+          # không cần cài sẵn Visual C++ Redistributable
+          windeployqt --release --no-translations --compiler-runtime dist/X-01.exe
 
       - name: Tải lên kết quả build
         uses: actions/upload-artifact@v4
