@@ -32,6 +32,8 @@ signals:
     void settingsChanged();
     /// Người dùng bấm nút "Áp dụng" của ô toạ độ tâm đài.
     void radarCenterApplied();
+    /// Người dùng đã xác nhận muốn thoát chương trình.
+    void exitRequested();
 
 private:
     void buildUi();
@@ -62,4 +64,7 @@ private:
     QCheckBox *m_chkTrackInfo = nullptr;
     QCheckBox *m_chkAutoDelete = nullptr;
     QSpinBox *m_autoDeleteSeconds = nullptr;
+
+    // Thoát chương trình
+    QPushButton *m_exitBtn = nullptr;
 };

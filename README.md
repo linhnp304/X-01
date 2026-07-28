@@ -45,7 +45,7 @@ Chương trình chạy ở chế độ toàn màn hình (thiết kế cho độ 
 **Panel 3 — thanh trạng thái**
 
 * Bên trái: trạng thái kết nối đến các máy tính khác *(làm ở bước sau)*.
-* Ở giữa: thời gian hệ thống + toạ độ con trỏ chuột khi di trên bản đồ.
+* Ở giữa: thời gian hệ thống + toạ độ con trỏ chuột khi di trên bản đồ (làm tươi 10 lần/giây).
 * Bên phải: toạ độ tâm đài.
 
 Mọi toạ độ đều hiển thị dạng lat-lng, làm tròn đến 0,000001 độ.
@@ -70,6 +70,7 @@ Mọi toạ độ đều hiển thị dạng lat-lng, làm tròn đến 0,000001
 * **Đường chia độ**: 30 độ / 10 độ / 5 độ / Tắt (đường đậm là bước lớn, đường mảnh là bước nhỏ).
 * **Hiện thông tin quỹ đạo**.
 * **Tự động xoá quỹ đạo khi mất cập nhật** + số giây (mặc định 60).
+* **Thoát chương trình** (cuối tab): có hỏi xác nhận trước khi đóng, mặc định chọn "Không".
 
 Toàn bộ cài đặt và màu sắc người dùng thay đổi được ghi ngay ra tệp `X-01.json`
 nằm cùng thư mục file chạy, và trở thành mặc định cho các lần chạy sau.

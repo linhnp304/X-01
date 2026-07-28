@@ -70,8 +70,14 @@ private:
     QLabel *m_statusCenter = nullptr; ///< thời gian hệ thống + toạ độ con trỏ
     QLabel *m_statusRight = nullptr;  ///< toạ độ tâm đài
 
-    QTimer *m_clockTimer = nullptr;
-    QString m_mouseGeoText; ///< phần toạ độ con trỏ hiện đang hiển thị (rỗng khi chuột ra ngoài)
+    /// Làm tươi ô giữa thanh trạng thái 10 lần/giây (đồng hồ + toạ độ con trỏ).
+    QTimer *m_statusTimer = nullptr;
+
+    // Vị trí con trỏ trên bản đồ. Chỉ lưu số ở đây, việc ghép chuỗi để cho bộ đếm
+    // thời gian làm — mỗi lần rê chuột không phải dựng lại chuỗi và vẽ lại nhãn.
+    double m_mouseLat = 0.0;
+    double m_mouseLng = 0.0;
+    bool m_mouseOnMap = false;
 
     bool m_firstShow = true;
 };

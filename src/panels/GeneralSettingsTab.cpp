@@ -10,6 +10,7 @@
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSignalBlocker>
@@ -278,7 +279,31 @@ void GeneralSettingsTab::buildUi()
         emit settingsChanged();
     });
 
+    // ---------------- Thoát chương trình ----------------
+    // Đẩy nút xuống đáy tab: phần co giãn nằm TRƯỚC nên mọi nhóm cài đặt ở trên
+    // giữ nguyên chiều cao, chỗ trống dồn hết vào giữa.
     root->addStretch(1);
+    root->addWidget(separator());
+
+    m_exitBtn = new QPushButton(tr("Thoát chương trình"), this);
+    m_exitBtn->setObjectName(QStringLiteral("ExitButton"));
+    m_exitBtn->setMinimumHeight(30);
+    root->addWidget(m_exitBtn);
+
+    connect(m_exitBtn, &QPushButton::clicked, this, [this] {
+        // Phần mềm chạy toàn màn hình nên bấm nhầm là mất luôn tình huống đang theo dõi.
+        // Hỏi lại một lần, mặc định chọn "Không" cho an toàn.
+        QMessageBox box(this);
+        box.setIcon(QMessageBox::Question);
+        box.setWindowTitle(tr("Thoát chương trình"));
+        box.setText(tr("Thoát phần mềm X-01?"));
+        QPushButton *yes = box.addButton(tr("Thoát"), QMessageBox::AcceptRole);
+        QPushButton *no = box.addButton(tr("Không"), QMessageBox::RejectRole);
+        box.setDefaultButton(no);
+        box.exec();
+        if (box.clickedButton() == yes)
+            emit exitRequested();
+    });
 }
 
 void GeneralSettingsTab::loadFromSettings()

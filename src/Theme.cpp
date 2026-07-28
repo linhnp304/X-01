@@ -136,6 +136,22 @@ QPushButton:disabled {
     border-color: #2B3136;
 }
 
+/* Nút thoát chương trình — tông đỏ để không bấm nhầm */
+QPushButton#ExitButton {
+    background-color: #2E2022;
+    color: #D98A8A;
+    border: 1px solid #5A3336;
+    font-weight: bold;
+}
+QPushButton#ExitButton:hover {
+    background-color: #4A2A2D;
+    color: #F0AFAF;
+    border-color: #9A4A50;
+}
+QPushButton#ExitButton:pressed {
+    background-color: #241A1B;
+}
+
 /* ---------- Ô nhập ---------- */
 QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox {
     background-color: #23272A;

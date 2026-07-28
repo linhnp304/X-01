@@ -49,7 +49,7 @@ jobs:
           windeployqt --release --no-translations --compiler-runtime dist/X-01.exe
 
       - name: Tải lên kết quả build
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: X-01-windows
           path: dist/
@@ -84,7 +84,7 @@ jobs:
           chmod +x dist/X-01
 
       - name: Tải lên kết quả build
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: X-01-ubuntu-24.04
           path: dist/

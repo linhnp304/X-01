@@ -140,26 +140,32 @@ void MainWindow::buildStatusBar()
     statusBar()->addPermanentWidget(m_statusRight);
     statusBar()->setSizeGripEnabled(false);
 
-    // Đồng hồ hệ thống, cập nhật mỗi giây
-    m_clockTimer = new QTimer(this);
-    m_clockTimer->setInterval(1000);
-    connect(m_clockTimer, &QTimer::timeout, this, [this] {
-        const QString now = QDateTime::currentDateTime().toString(QStringLiteral("dd/MM/yyyy  HH:mm:ss"));
-        m_statusCenter->setText(m_mouseGeoText.isEmpty()
-                                    ? now
-                                    : now + QStringLiteral("     |     ") + m_mouseGeoText);
+    // Làm tươi 10 lần/giây (100 ms) để toạ độ con trỏ bám sát chuyển động của chuột.
+    // Không cập nhật thẳng trong sự kiện rê chuột vì chuột có thể gửi hàng trăm
+    // sự kiện mỗi giây, vẽ lại nhãn từng ấy lần là thừa.
+    // QLabel::setText tự bỏ qua khi chuỗi không đổi, nên lúc chuột đứng yên
+    // nhãn chỉ thực sự vẽ lại mỗi giây một lần (khi đồng hồ nhảy số).
+    m_statusTimer = new QTimer(this);
+    m_statusTimer->setInterval(100);
+    connect(m_statusTimer, &QTimer::timeout, this, [this] {
+        QString text = QDateTime::currentDateTime().toString(QStringLiteral("dd/MM/yyyy  HH:mm:ss"));
+        if (m_mouseOnMap)
+            text += QStringLiteral("     |     ") + tr("Con trỏ: ") + formatLatLng(m_mouseLat, m_mouseLng);
+        m_statusCenter->setText(text);
     });
-    m_clockTimer->start();
+    m_statusTimer->start();
 }
 
 void MainWindow::connectSignals()
 {
     // --- Toạ độ con trỏ chuột trên bản đồ ---
     connect(m_map, &MapWidget::mouseGeoMoved, this, [this](double lat, double lng) {
-        m_mouseGeoText = tr("Con trỏ: ") + formatLatLng(lat, lng);
+        m_mouseLat = lat;
+        m_mouseLng = lng;
+        m_mouseOnMap = true;
     });
     connect(m_map, &MapWidget::mouseGeoLeft, this, [this] {
-        m_mouseGeoText.clear();
+        m_mouseOnMap = false;
     });
 
     // --- Cài đặt chung ---
@@ -174,6 +180,12 @@ void MainWindow::connectSignals()
     // --- Màu sắc ---
     connect(m_colorsTab, &ColorsTab::settingsChanged,
             this, &MainWindow::applyAndSaveSettings);
+
+    // --- Thoát chương trình (đã hỏi xác nhận ở trong tab) ---
+    connect(m_generalTab, &GeneralSettingsTab::exitRequested, this, [this] {
+        m_settings.save(); // ghi lại cấu hình lần cuối trước khi đóng
+        close();
+    });
 }
 
 void MainWindow::applyAndSaveSettings()
