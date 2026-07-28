@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Lấy mã nguồn
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Cài Qt 6
         uses: jurplel/install-qt-action@v4
@@ -49,7 +49,7 @@ jobs:
           windeployqt --release --no-translations --compiler-runtime dist/X-01.exe
 
       - name: Tải lên kết quả build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: X-01-windows
           path: dist/
@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: Lấy mã nguồn
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Cài công cụ biên dịch và Qt 6
         run: |
@@ -84,7 +84,7 @@ jobs:
           chmod +x dist/X-01
 
       - name: Tải lên kết quả build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: X-01-ubuntu-24.04
           path: dist/
