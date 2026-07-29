@@ -50,7 +50,9 @@ QWidget *radioRow(const QString &caption,
     auto *row = new QWidget;
     auto *lay = new QHBoxLayout(row);
     lay->setContentsMargins(0, 0, 0, 0);
-    lay->setSpacing(10);
+    // Khoảng cách giữa các nút chọn: đủ rộng để mắt tách được từng lựa chọn,
+    // nhưng vẫn xếp vừa một hàng trong panel rộng 30% màn hình.
+    lay->setSpacing(14);
 
     auto *cap = new QLabel(caption, row);
     cap->setMinimumWidth(112);

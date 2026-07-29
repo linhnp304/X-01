@@ -176,10 +176,14 @@ QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover {
 }
 
 /* ---------- CheckBox / RadioButton ---------- */
+/* padding phải khác 0: khi ô đánh dấu được tạo kiểu bằng stylesheet, Qt tính
+   chiều rộng gợi ý của widget hụt vài pixel so với chiều rộng chữ thật, làm
+   ký tự cuối bị cắt (chữ "m" trong "5km"). Chừa sẵn khoảng trống bên phải là
+   hết. Padding trái giữ bằng 0 để ô đánh dấu không bị đẩy lệch. */
 QCheckBox, QRadioButton {
     color: #C6CCD2;
     spacing: 7px;
-    padding: 2px 0;
+    padding: 2px 8px 2px 0;
 }
 QCheckBox::indicator, QRadioButton::indicator {
     width: 13px;

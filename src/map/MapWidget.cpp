@@ -332,32 +332,51 @@ void MapWidget::drawRangeRings(QPainter &p)
 
     p.setBrush(Qt::NoBrush);
 
-    /// Vẽ một loạt vòng tròn cách đều nhau; bỏ qua vòng trùng với bước đậm.
-    auto drawRings = [&](double stepKm, const QColor &color, double penWidth, bool skipMajor) {
+    /// Một cự ly có phải bội số (xấp xỉ) của một bước vẽ hay không.
+    auto isMultipleOf = [](double km, double step) {
+        if (step <= 0.0)
+            return false;
+        const double ratio = km / step;
+        return std::abs(ratio - std::round(ratio)) < 1e-6;
+    };
+
+    auto ringPen = [](const QColor &color, double widthPx) {
+        QPen pen(color);
+        pen.setWidthF(widthPx);
+        return pen;
+    };
+
+    /// Vẽ một loạt vòng tròn cách đều nhau.
+    /// skipCovered = true thì bỏ những vòng đã được vẽ bằng nét đậm hơn.
+    auto drawRings = [&](double stepKm, const QColor &color, double penWidth, bool skipCovered) {
         if (stepKm <= 0.0)
             return;
         // Bỏ qua nếu các vòng quá sát nhau trên màn hình
         if (kmToPixelsY(stepKm) < kMinRingSpacingPx)
             return;
-        QPen pen(color);
-        pen.setWidthF(penWidth);
-        p.setPen(pen);
+        p.setPen(ringPen(color, penWidth));
 
         const int count = static_cast<int>(std::floor(maxKm / stepKm + 1e-9));
         for (int i = 1; i <= count; ++i) {
             const double km = i * stepKm;
-            if (skipMajor) {
-                // Vòng này đã được vẽ ở lượt "đậm" rồi thì không vẽ lại
-                const double ratio = km / majorStep;
-                if (std::abs(ratio - std::round(ratio)) < 1e-6)
-                    continue;
-            }
+            // Vòng ở đúng cự ly tối đa được vẽ riêng ở cuối hàm, bỏ qua tại đây
+            // để khỏi vẽ chồng hai lần lên nhau.
+            if (std::abs(km - maxKm) < 1e-6)
+                continue;
+            if (skipCovered && isMultipleOf(km, majorStep))
+                continue;
             p.drawEllipse(c, kmToPixelsX(km), kmToPixelsY(km));
         }
     };
 
     drawRings(minorStep, minorColor, 1.0, true);
     drawRings(majorStep, majorColor, 1.4, false);
+
+    // Vòng ngoài cùng: LUÔN vẽ bằng nét đậm đúng tại cự ly tối đa, kể cả khi cự ly
+    // tối đa không chia hết cho bước vẽ. Ví dụ cự ly 22 km với bước 5 km: ngoài các
+    // vòng 5-10-15-20 vẫn phải có vòng 22 để khép kín tầm quan sát của ra đa.
+    p.setPen(ringPen(majorColor, 1.4));
+    p.drawEllipse(c, kmToPixelsX(maxKm), kmToPixelsY(maxKm));
 }
 
 void MapWidget::drawBearingLines(QPainter &p)
