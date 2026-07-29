@@ -30,6 +30,7 @@ public:
     int mapBrightness = 1;      ///< độ sáng bản đồ, 1 (tối nhất) .. 10 (sáng nhất)
     bool showAirRoutes = false; ///< hiện lớp đường bay dân dụng
     bool showAirports = false;  ///< hiện lớp sân bay
+    bool showRivers = true;     ///< hiện lớp sông ngòi
     bool showPlaceNames = true; ///< hiện lớp tên địa danh
     bool showProvinces = true;  ///< hiện lớp địa phận tỉnh/thành phố
 

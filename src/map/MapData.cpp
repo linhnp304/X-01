@@ -176,6 +176,12 @@ bool MapData::load(const QString &dir)
     landShapes += truongSa;
     m_landFill.build(landShapes);
 
+    // --- Sông ngòi ---
+    // Rivers.shp lưu dạng Polygon (lòng sông là vùng, không phải đường tim sông)
+    // nên dùng FillLayer để tô nền nước. Tệp .prj là GEOGCS -> toạ độ đã là độ,
+    // không cần quy đổi phép chiếu.
+    m_rivers.build(readAndProject(dir + sep + QStringLiteral("Rivers.shp")));
+
     // --- Địa phận tỉnh/thành phố (viền khép kín) ---
     m_provinceLines.build(vnm, true);
 

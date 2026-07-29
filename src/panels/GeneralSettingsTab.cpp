@@ -122,10 +122,12 @@ void GeneralSettingsTab::buildUi()
 
     m_chkAirRoutes = new QCheckBox(tr("Đường bay dân dụng"), this);
     m_chkAirports = new QCheckBox(tr("Sân bay"), this);
+    m_chkRivers = new QCheckBox(tr("Sông ngòi"), this);
     m_chkPlaceNames = new QCheckBox(tr("Tên địa danh"), this);
     m_chkProvinces = new QCheckBox(tr("Địa phận tỉnh/thành phố"), this);
 
-    for (QCheckBox *c : { m_chkAirRoutes, m_chkAirports, m_chkPlaceNames, m_chkProvinces })
+    for (QCheckBox *c : { m_chkAirRoutes, m_chkAirports, m_chkRivers,
+                          m_chkPlaceNames, m_chkProvinces })
         root->addWidget(c);
 
     connect(m_chkAirRoutes, &QCheckBox::toggled, this, [this](bool on) {
@@ -134,6 +136,10 @@ void GeneralSettingsTab::buildUi()
     });
     connect(m_chkAirports, &QCheckBox::toggled, this, [this](bool on) {
         m_settings->showAirports = on;
+        emit settingsChanged();
+    });
+    connect(m_chkRivers, &QCheckBox::toggled, this, [this](bool on) {
+        m_settings->showRivers = on;
         emit settingsChanged();
     });
     connect(m_chkPlaceNames, &QCheckBox::toggled, this, [this](bool on) {
@@ -312,6 +318,7 @@ void GeneralSettingsTab::loadFromSettings()
     const QSignalBlocker b1(m_brightnessSlider);
     const QSignalBlocker b2(m_chkAirRoutes);
     const QSignalBlocker b3(m_chkAirports);
+    const QSignalBlocker b3b(m_chkRivers);
     const QSignalBlocker b4(m_chkPlaceNames);
     const QSignalBlocker b5(m_chkProvinces);
     const QSignalBlocker b6(m_radarLat);
@@ -328,6 +335,7 @@ void GeneralSettingsTab::loadFromSettings()
 
     m_chkAirRoutes->setChecked(m_settings->showAirRoutes);
     m_chkAirports->setChecked(m_settings->showAirports);
+    m_chkRivers->setChecked(m_settings->showRivers);
     m_chkPlaceNames->setChecked(m_settings->showPlaceNames);
     m_chkProvinces->setChecked(m_settings->showProvinces);
 

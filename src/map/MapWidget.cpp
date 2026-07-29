@@ -220,6 +220,16 @@ void MapWidget::drawMapLayers(QPainter &p)
 
     const AppSettings *s = m_settings;
 
+    // Sông ngòi: vẽ ngay trên nền đất, dưới các lớp ranh giới.
+    // Dữ liệu là vùng lòng sông nên vừa tô nền vừa kẻ viền mảnh cùng màu — khi thu
+    // nhỏ, lòng sông hẹp hơn 1 pixel sẽ biến mất nếu chỉ tô, nét viền giữ cho
+    // dòng sông vẫn liền mạch ở mọi mức phóng.
+    if (!s || s->showRivers) {
+        p.setPen(makePen(m_theme.river, 0.9));
+        p.setBrush(m_theme.river);
+        p.drawPath(m_data->rivers().path(lod));
+    }
+
     if (!s || s->showProvinces)
         drawLines(m_data->provinceLines(), makePen(m_theme.province, 1.0));
     if (!s || s->showAirRoutes)

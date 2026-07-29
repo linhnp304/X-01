@@ -29,6 +29,9 @@ MapTheme MapTheme::fromBrightness(int brightness)
     th.province = lerp(0x2B2D30, 0x54575A, t);
     th.nation   = lerp(0xA0702D, 0xD9A44F, t);
     th.coast    = lerp(0x2A7C96, 0x52B9D4, t);
+    // Sông ngòi lấy tông nước giống bờ biển nhưng trầm hơn, để đường bờ biển
+    // vẫn là nét nước nổi bật nhất trên bản đồ.
+    th.river    = lerp(0x235A69, 0x4894A8, t);
     th.label    = lerp(0x3D4145, 0x2E3134, t);
     th.placeDot = lerp(0x45494E, 0x232527, t);
 

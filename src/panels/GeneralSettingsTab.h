@@ -47,6 +47,7 @@ private:
     // Ẩn/hiện các lớp bản đồ
     QCheckBox *m_chkAirRoutes = nullptr;
     QCheckBox *m_chkAirports = nullptr;
+    QCheckBox *m_chkRivers = nullptr;
     QCheckBox *m_chkPlaceNames = nullptr;
     QCheckBox *m_chkProvinces = nullptr;
 

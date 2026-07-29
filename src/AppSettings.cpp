@@ -84,6 +84,7 @@ void AppSettings::load()
     mapBrightness  = qBound(1, map.value(QStringLiteral("doSang")).toInt(mapBrightness), 10);
     showAirRoutes  = map.value(QStringLiteral("hienDuongBayDanDung")).toBool(showAirRoutes);
     showAirports   = map.value(QStringLiteral("hienSanBay")).toBool(showAirports);
+    showRivers     = map.value(QStringLiteral("hienSongNgoi")).toBool(showRivers);
     showPlaceNames = map.value(QStringLiteral("hienTenDiaDanh")).toBool(showPlaceNames);
     showProvinces  = map.value(QStringLiteral("hienDiaPhanTinh")).toBool(showProvinces);
 
@@ -120,6 +121,7 @@ bool AppSettings::save() const
     map[QStringLiteral("doSang")] = mapBrightness;
     map[QStringLiteral("hienDuongBayDanDung")] = showAirRoutes;
     map[QStringLiteral("hienSanBay")] = showAirports;
+    map[QStringLiteral("hienSongNgoi")] = showRivers;
     map[QStringLiteral("hienTenDiaDanh")] = showPlaceNames;
     map[QStringLiteral("hienDiaPhanTinh")] = showProvinces;
 

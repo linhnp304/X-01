@@ -55,7 +55,8 @@ Mọi toạ độ đều hiển thị dạng lat-lng, làm tròn đến 0,000001
 ## 2. Tab "Cài đặt chung"
 
 * **Độ sáng bản đồ**: thanh trượt 1 (tối nhất) → 10 (sáng nhất).
-* **Ẩn/Hiện các lớp bản đồ**: Đường bay dân dụng, Sân bay, Tên địa danh, Địa phận tỉnh/thành phố.
+* **Ẩn/Hiện các lớp bản đồ**: Đường bay dân dụng, Sân bay, Sông ngòi, Tên địa danh,
+  Địa phận tỉnh/thành phố.
 * **Toạ độ tâm đài**: ô nhập lat/lng + nút **Áp dụng** (dịch tâm đài và đưa khung nhìn về vị trí mới).
 * **Cự ly tối đa (km)**: bán kính vòng tròn cự ly ngoài cùng — mặc định **50 km**.
 * **Vòng tròn cự ly**: 5km / 1km / 0.5km / 0.1km / Tắt.

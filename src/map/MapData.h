@@ -81,6 +81,8 @@ public:
     bool isLoaded() const { return m_loaded; }
 
     const FillLayer &landFill() const { return m_landFill; }
+    /// Sông ngòi — dữ liệu là vùng (lòng sông) chứ không phải đường tim sông.
+    const FillLayer &rivers() const { return m_rivers; }
     const LineLayer &provinceLines() const { return m_provinceLines; }
     const LineLayer &nationLines() const { return m_nationLines; }
     const LineLayer &coastLines() const { return m_coastLines; }
@@ -104,6 +106,7 @@ private:
     bool m_loaded = false;
 
     FillLayer m_landFill;
+    FillLayer m_rivers;
     LineLayer m_provinceLines;
     LineLayer m_nationLines;
     LineLayer m_coastLines;

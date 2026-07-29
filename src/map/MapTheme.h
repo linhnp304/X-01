@@ -14,6 +14,7 @@ struct MapTheme
     QColor province;      // viền địa phận tỉnh/thành phố
     QColor nation;        // ranh giới quốc gia + đường biên giới
     QColor coast;         // bờ biển và viền đảo
+    QColor river;         // sông ngòi (lòng sông dạng vùng)
     QColor label;         // chữ nhãn (tên địa danh, tên sân bay)
     QColor placeDot;      // chấm đánh dấu vị trí địa danh
     QColor airRoute;      // đường bay dân dụng
